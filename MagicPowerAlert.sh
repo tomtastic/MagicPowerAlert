@@ -7,8 +7,9 @@
 #
 # 3. Or, run frequently but set the muting and inactivity vars
 #   */30 * * * * /Users/dougb/MagicPower/MagicPowerAlert.sh
-#
-VERSION="v1.1.0" # unused, but for info
+
+# We want to stop on errors, unassigned variables and fail mid-pipe if necessary
+set -euo pipefail
 
 # You can change the default (20) threshold by passing a value as the first argument to the script
 THRESHOLD="${1:-20}"
@@ -29,7 +30,7 @@ MESSAGE="Get a coffee and charge:\n"
 DIALOG_TIMEOUT=60
 
 # You can pick an appropriate icon colour if you have SpaceGray devices
-SPACE_GRAY=0
+SPACE_GRAY=1
 
 # set to 1, creates a log file for debugging. Log file is ./MagicPowerAlert.sh.log
 LOGFILE=0
@@ -57,7 +58,7 @@ function logger() {
 THRESHOLD="${THRESHOLD/\%/}"
 if [[ "$THRESHOLD" == "status" ]]; then
     getStatus="true"
-elif [[ "$THRESHOLD" -lt 1 ]] || [[ "$THRESHOLD" -gt 100 ]]; then
+elif [[ "$THRESHOLD" =~ [0-9]+ ]] && { [[ "$THRESHOLD" -lt 1 ]] || [[ "$THRESHOLD" -gt 100 ]]; }; then
     echo "[!] Alert threshold must be between 1% and 100%" >&2
     exit 1
 else
@@ -148,7 +149,7 @@ for index in ${!DEVICES[*]}; do
                               following-sibling::*[1]/
                                 text()" - 2>/dev/null <<< "$IOREG")
     if [[ $statusFlag == 3 ]]; then
-        status=" (charging)"
+        status=$(echo -n " (charging)" | rb -f 6)
     else
         status=""
     fi
@@ -156,8 +157,7 @@ for index in ${!DEVICES[*]}; do
     if [[ $powerValue =~ $int_re ]] ; then
         if [[ $getStatus == "true" ]]; then
             messages[$index]="$device at $powerValue%$status"
-        fi
-        if [[ $powerValue -le $THRESHOLD ]]; then
+        elif [[ $powerValue -le $THRESHOLD ]]; then
             messages[$index]="$device at $powerValue%"
         fi
     fi
