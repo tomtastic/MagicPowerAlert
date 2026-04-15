@@ -6,7 +6,7 @@
 Convenient low-battery notification for your Apple Mac with Bluetooth devices.
 
 Mac OS warns your Magic Mouse is running out of power at 2%. Not ideal given the charging port location.
-MagicPowerAlert lets you know at 20%, giving you lots of time to fit in a charging session at a time of your choosing.
+MagicPowerAlert lets you know at 35% by default, giving you lots of time to fit in a charging session at a time of your choosing.
 
 Competency level: comfortable using Terminal, and cron.
 
@@ -26,7 +26,7 @@ Magic Keyboard with Numeric Keypad at 98%
 Magic Mouse 2 at 47% (charging)
 ```
 #### Configure
-The default should be fine, it'll pick up either mouse or keyboard below 20% power.
+The default should be fine, it'll pick up either mouse or keyboard below 35% power.
 But you can change this is you like.
 
 ```
@@ -40,7 +40,7 @@ MUTE_CONSECUTIVE_ALERTS_HOURS=4
 INACTIVITY_THRESHOLD_MINS=5
 
 # You can change the message, if coffee is not your thing.
-MESSAGE="Get a coffee and charge:\n"
+MESSAGE="Get a coffee and charge:"
 ```
 #### Test Pop-up Alert
 Give it a quick test, set the alert THRESHOLD to 100 by supplying as an argument.
